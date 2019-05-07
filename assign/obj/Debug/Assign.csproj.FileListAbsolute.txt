@@ -86,3 +86,13 @@ D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Memory-m
 D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Memory-master\assign\obj\Debug\Assign.Gant_chart.resources
 D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Memory-master\assign\obj\Debug\Assign.Properties.Resources.resources
 D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Memory-master\assign\obj\Debug\Assign.csproj.GenerateResource.Cache
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\bin\Debug\Assign.exe.config
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\obj\Debug\Assign.exe
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\obj\Debug\Assign.pdb
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\bin\Debug\Assign.exe
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\bin\Debug\Assign.pdb
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\obj\Debug\Assign.csprojResolveAssemblyReference.cache
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\obj\Debug\Assign.Form1.resources
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\obj\Debug\Assign.Gant_chart.resources
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\obj\Debug\Assign.Properties.Resources.resources
+D:\eng\3rd year\Second Term\Operating Systems\PROJECTS\Memory_Allocator\Draw_initial\assign\obj\Debug\Assign.csproj.GenerateResource.Cache

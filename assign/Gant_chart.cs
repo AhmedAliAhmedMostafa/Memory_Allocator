@@ -32,17 +32,49 @@ namespace Assign
         float starting_x;
         float starting_y;
         float w, h;
-        Point genesis_point;
+        Graphics g_global;
+        Point genesis_point=new Point(260,0);
         List<int> old_start=new List<int>();
         List<int> old_size=new List<int>();
-        List<int> new_start=new List<int>();
-        List<int> new_size=new List<int>();
+        SortedDictionary<int,int> new_process=new SortedDictionary<int,int>();
+            public struct segment
+        {
+            public int process_id,start,size;
+            public string name;
+        }
+        public struct process
+        {
+            public List<segment> Process_seg;
+            public int num_seg;
+           public process(int num=0)
+            {
+                Process_seg=new List<segment>();
+                num_seg = num;
+            }
+        }
+        List<process>all_new =new List<process>();
         SortedDictionary<int, KeyValuePair<char, int>> all = new SortedDictionary<int, KeyValuePair<char, int>>();
+        List<segment> all_seg = new List<segment>();
+        public void Allocate_best_fit()
+        {
+
+        }
+        public void Allocate_first_fit()
+        {
+
+        }
+        public void Deallocate_old()
+        {
+        }
+        public void Deallocate_new()
+        {
+
+        }
+
         public Gant_chart()
         {
             InitializeComponent();
-
-
+            
         }
         public string format(string d)
         {
@@ -54,45 +86,68 @@ namespace Assign
                
 
         }
+      
         public Point Draw_Area(Graphics g, char type, Point genesis_point,int start,int size,string data)
         {
             g.PageUnit = GraphicsUnit.Millimeter;
+            g_global = g;
             float width=memory_width;
             float height=size*step;
-            float y = genesis_point.Y;
-            float x = genesis_point.X;
-            genesis_point.Y+=height;
-            float adress_x = starting_x - num_adress_digits * digit_width;
-            float adress_y ;
+            float adress_x = genesis_point.X - num_adress_digits * digit_width;
+            float adress_y=genesis_point.Y-digit_height/2 ;
             int len=data.Length;
-            float data_x=starting_x+memory_width/2-(len/2*digit_width);
-            float data_y=starting_y+y+height/2;
+            float data_x=genesis_point.X+memory_width/2-(len/2*digit_width);
+            float data_y=genesis_point.Y+height/2;
             start = int.Parse( format(start.ToString()));
-
-            
-            switch (type)
+            float min_height = 10;
+            Point p1=new Point();
+            float size1;
+            int size2,start1,end;
+            if (height < min_height)
             {
-                case'h':
-                    g.DrawRectangle(Pen_hole, x, y, width,height);
-                    g.DrawString(start.ToString(),font_adress,brush_adress,adress_x,adress_y);
-                    g.DrawString(data,font_data,brush_data,data_x,data_y);
-                    break;
-                case'o':
-                    g.DrawRectangle(pen_old, x, y, width,height);
-                    g.DrawString(start.ToString(),font_adress,brush_adress,adress_x,adress_y);
-                    g.DrawString(data,font_data,brush_data,data_x,data_y);
-                    break;
-                case'n':
-                    g.DrawRectangle(pen_new, x, y, width,height);
-                    g.DrawString(start.ToString(),font_adress,brush_adress,adress_x,adress_y);
-                    g.DrawString(data,font_data,brush_data,data_x,data_y);
-                    break;
-                    
+                height = min_height;
             }
+            if (genesis_point.Y + height > memory_height)
+            {
+                size1=(memory_height-genesis_point.Y)/step;
+                start1 = start + (int)size1;
+                end=start1-1;
+                size2=size-(int)size1;
+                p1 = Draw_Area(g, type, genesis_point, start,(int)size1,data);
+                g.DrawString(end.ToString(), font_adress, brush_adress, adress_x, memory_height - digit_height / 2);
+                genesis_point.X-=memory_width+num_adress_digits*digit_width+10;
+                genesis_point.Y = 10;
+                genesis_point= Draw_Area(g, type, genesis_point, start1, size2, data);
+            }
+            else
+            {
+                switch (type)
+                {
+                    case 'h':
+                        g.DrawRectangle(Pen_hole, genesis_point.X, genesis_point.Y, width, height);
+                        g.DrawString(start.ToString(), font_adress, brush_adress, adress_x, adress_y);
+                        g.DrawString(data, font_data, brush_data, data_x, data_y);
+                        break;
+                    case 'o':
+                        g.DrawRectangle(pen_old,genesis_point.X , genesis_point.Y, width, height);
+                        g.DrawString(start.ToString(), font_adress, brush_adress, adress_x, adress_y);
+                        g.DrawString(data, font_data, brush_data, data_x, data_y);
+                        break;
+                    case 'n':
+                        g.DrawRectangle(pen_new, genesis_point.X, genesis_point.Y, width, height);
+                        g.DrawString(start.ToString(), font_adress, brush_adress, adress_x, adress_y);
+                        g.DrawString(data, font_data, brush_data, data_x, data_y);
+                        break;
+
+                }
+                
+                genesis_point.Y += (int)height;
+            }
+            return genesis_point;
         }
         public void sort()
         { 
-            int total=Form1.holes_num+old_start.Count+new_start.Count;
+         
 
             for(int i=0;i<Form1.holes_num;i++)
             {
@@ -102,9 +157,9 @@ namespace Assign
             {
                 all.Add(old_start[i], new KeyValuePair<char, int>('o', i));
             }
-            for(int i=0;i<new_start.Count;i++)
+            for(int i=0;i<all_seg.Count;i++)
             {
-                all.Add(new_start[i],new KeyValuePair<char,int>('n',i));
+                all.Add(all_seg[i].start,new KeyValuePair<char,int>('n',i));
             }
 
         }
@@ -112,24 +167,32 @@ namespace Assign
         {
             g.Clear(Color.White);
             g.PageUnit = GraphicsUnit.Millimeter;
-            g.DrawRectangle(outer, starting_x, starting_y, memory_width, memory_height);
+            genesis_point = new Point(310, 10);
+            string data="";
+            int size = 0;
             ////////////////Holes/////////////////////////////////
-          
-       
-                for (int i = 0; i < Form1.holes_num; i++)
+
+            sort();
+            foreach (KeyValuePair<int, KeyValuePair<char, int>> p in all)
+            {
+                switch(p.Value.Key)
                 {
-                    Draw_Area(g, 'h', Form1.holes_start[i], Form1.holes_size[i], "Hole" + i.ToString());
+                    case'h':
+                        data="Hole_"+p.Value.Value.ToString();
+                        size=Form1.holes_size[p.Value.Value];
+                        break;
+                    case'o':
+                        data="Old_"+p.Value.Value.ToString();
+                        size=old_size[p.Value.Value];
+                        break;
+                    case'n':
+                        data = all_seg[p.Value.Value].process_id.ToString() +":"+ all_seg[p.Value.Value].name;
+                        size=all_seg[p.Value.Value].size;
+                        break;
                 }
-            ////////////////Old///////////////////////////////////
-                for (int j = 0; j < old_start.Count; j++)
-                {
-                    Draw_Area(g, 'o', old_start[j],old_size[j],"Old"+j.ToString());
-                }
-                ////////////////new///////////////////////////////////
-                for (int k = 0; k< new_start.Count; k++)
-                {
-                    Draw_Area(g, 'n',new_start[k], new_size[k], "x" + k.ToString());
-                }
+                genesis_point = Draw_Area(g, p.Value.Key, genesis_point, p.Key, size, data);
+            }
+            g.DrawString((Form1.memory_max_size - 1).ToString(), font_adress, brush_adress, genesis_point.X - num_adress_digits * digit_width, genesis_point.Y);
             
         }
         public void get_old()
@@ -165,6 +228,87 @@ namespace Assign
             starting_y = 0;
             get_old();
             Redraw(g);
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Add_btn_Click(object sender, EventArgs e)
+        {
+            seg_table.Controls.Clear();
+            int num_seg = int.Parse(seg_txt.Text);
+
+                Label l1 = new Label();
+                l1.Text = "Seg_num";
+                //l1.AutoSize = false;
+                //l1.Margin = new Padding(6, 6, 6, 6);
+                seg_table.Controls.Add(l1, 0, 0);
+
+                //flowLayoutPanel1.Controls.Add(l1);
+                for (int i = 1; i <= num_seg; i++)
+                {
+                    l1 = new Label();
+                    l1.Name = i.ToString(); ;
+                    l1.Text = "Seg" + i.ToString();
+                    l1.AutoSize = true;
+                    l1.Margin = new Padding(6, 6, 6, 6);
+                    seg_table.RowCount++;
+                    seg_table.Controls.Add(l1, 0, i);
+
+
+                }
+            Label l2 = new Label();
+            l2.Text = "Seg_Name";
+            seg_table.ColumnCount++;
+            seg_table.Controls.Add(l2, 1, 0);
+            for (int i = 1; i <= num_seg; i++)
+            {
+                TextBox t2 = new TextBox();
+
+                t2.AutoSize = true;
+
+                //Arrival_Storing_Handlers(); 
+                //this.t2.Leave += new System.EventHandler(this.t2_Leave);
+
+
+                seg_table.Controls.Add(t2, 1, i);
+                seg_table.Controls.SetChildIndex(t2, i);
+
+            }
+            Label l3 = new Label();
+            l3.Text = "Seg_Size";
+            seg_table.ColumnCount++;
+            seg_table.Controls.Add(l3, 2, 0);
+            for (int i = 1; i <= num_seg; i++)
+            {
+                TextBox t3= new TextBox();
+
+                t3.AutoSize = true;
+
+                //Arrival_Storing_Handlers(); 
+                //this.t2.Leave += new System.EventHandler(this.t2_Leave);
+
+
+                seg_table.Controls.Add(t3, 2, i);
+                seg_table.Controls.SetChildIndex(t3, num_seg + i);
+
+            }
+            seg_box.Visible = true;
+            //Redraw(g_global);
+            
+        }
+
+        private void Gant_chart_Load(object sender, EventArgs e)
+        {
+            seg_box.Visible = false;
+            seg_table.ColumnStyles.Clear();
+            seg_table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize, 30F));
+            seg_table.RowStyles.Clear();
+            seg_table.RowStyles.Add(new RowStyle(SizeType.AutoSize, 30f));
+        
+            
         }
 
 
